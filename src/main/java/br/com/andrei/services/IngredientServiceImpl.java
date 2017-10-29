@@ -35,7 +35,6 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 
 	@Override
-	@Transactional(readOnly=true)
 	public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
 		Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
@@ -58,7 +57,6 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 
 	@Override
-	@Transactional
 	public IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand) {
 
 		Optional<Recipe> recipeOptional = recipeRepository.findById(ingredientCommand.getRecipeId());
@@ -97,7 +95,11 @@ public class IngredientServiceImpl implements IngredientService {
 						.filter(recipeIngredients -> recipeIngredients.getUom().getId().equals(ingredientCommand.getUom().getId()))
 						.findFirst();
 			}
-			return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+			
+			IngredientCommand ingredientCommandSaved = ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+			ingredientCommandSaved.setRecipeId(recipe.getId());
+			
+			return ingredientCommandSaved;
 
 		}
 
